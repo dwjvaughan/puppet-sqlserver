@@ -47,7 +47,7 @@ sqlserver::database::readonly { 'SQL2000_1: Set model readonly':
   require       => Sqlserver::V2000::Instance['SQL2000_1'],
 }
 
-# Test windows logins/roles
+# Test logins/roles
 sqlserver::users::login_windows { 'SQL2000_1: BUILTIN\Users login':
   server      => 'localhost\SQL2000_1',
   login_name  => 'BUILTIN\Users',
