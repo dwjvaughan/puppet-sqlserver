@@ -82,3 +82,21 @@ sqlserver::sqlcmd::sqlscript { 'create test_database on SQL2016_1':
   path    => 'C:/Windows/Temp/create_db.sql',
   unless  => "IF NOT EXISTS(SELECT * FROM sys.databases WHERE name = 'test_database') raiserror ('Database does not exist',1,1)",
 }
+
+# Test sql logins/roles
+sqlserver::users::login_sql { 'SQL2016_1: test_user':
+  server         => 'localhost\SQL2016_1',
+  login_name     => 'test_user',
+  login_password => 'Pa44w0rd!',
+  require        => Sqlserver::V2016::Instance['SQL2016_1'],
+}
+-> sqlserver::users::login_role { 'SQL2016_1: test_user is sysadmin':
+  server     => 'localhost\SQL2016_1',
+  login_name => 'test_user',
+  role_name  => 'sysadmin',
+}
+-> sqlserver::users::default_database { 'SQL2016_1: test_user default database is tempdb':
+  server                => 'localhost\SQL2016_1',
+  login_name            => 'test_user',
+  default_database_name => 'tempdb'
+}

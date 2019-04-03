@@ -64,3 +64,21 @@ sqlserver::users::login_role { 'SQL2012_1: Everyone is sysadmin':
   login_name            => '\Everyone',
   default_database_name => 'tempdb',
 }
+
+# Test sql logins/roles
+sqlserver::users::login_sql { 'SQL2012_1: test_user':
+  server         => 'localhost\SQL2012_1',
+  login_name     => 'test_user',
+  login_password => 'Pa44w0rd!',
+  require        => Sqlserver::V2012::Instance['SQL2012_1'],
+}
+-> sqlserver::users::login_role { 'SQL2012_1: test_user is sysadmin':
+  server     => 'localhost\SQL2012_1',
+  login_name => 'test_user',
+  role_name  => 'sysadmin',
+}
+-> sqlserver::users::default_database { 'SQL2012_1: test_user default database is tempdb':
+  server                => 'localhost\SQL2012_1',
+  login_name            => 'test_user',
+  default_database_name => 'tempdb'
+}

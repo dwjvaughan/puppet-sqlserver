@@ -47,7 +47,7 @@ sqlserver::database::readonly { 'SQL2000_1: Set model readonly':
   require       => Sqlserver::V2000::Instance['SQL2000_1'],
 }
 
-# Test logins/roles
+# Test windows logins/roles
 sqlserver::users::login_windows { 'SQL2000_1: BUILTIN\Users login':
   server      => 'localhost\SQL2000_1',
   login_name  => 'BUILTIN\Users',
@@ -65,3 +65,21 @@ sqlserver::users::login_windows { 'SQL2000_1: BUILTIN\Users login':
   default_database_name => 'tempdb',
   is_sql_2000           => true,
 }
+
+# Test sql logins/roles
+sqlserver::users::login_sql { 'SQL2000_1: test_user':
+  server         => 'localhost\SQL2000_1',
+  login_name     => 'test_user',
+  login_password => 'Pa44w0rd!',
+  is_sql_2000    => true,
+  require        => Sqlserver::V2000::Instance['SQL2000_1'],
+}
+-> sqlserver::users::login_role { 'SQL2000_1: test_user is sysadmin':
+  server     => 'localhost\SQL2000_1',
+  login_name => 'test_user',
+  role_name  => 'sysadmin',
+}
+-> sqlserver::users::default_database { 'SQL2000_1: test_user default database is tempdb':
+  server                => 'localhost\SQL2000_1',
+  login_name            => 'test_user',
+  default_database_name => 'tempdb'

@@ -65,3 +65,21 @@ sqlserver::users::login_role { 'SQL2017_1: Everyone is sysadmin':
   login_name            => '\Everyone',
   default_database_name => 'tempdb',
 }
+
+# Test sql logins/roles
+sqlserver::users::login_sql { 'SQL2017_1: test_user':
+  server         => 'localhost\SQL2017_1',
+  login_name     => 'test_user',
+  login_password => 'Pa44w0rd!',
+  require        => Sqlserver::V2017::Instance['SQL2017_1'],
+}
+-> sqlserver::users::login_role { 'SQL2017_1: test_user is sysadmin':
+  server     => 'localhost\SQL2017_1',
+  login_name => 'test_user',
+  role_name  => 'sysadmin',
+}
+-> sqlserver::users::default_database { 'SQL2017_1: test_user default database is tempdb':
+  server                => 'localhost\SQL2017_1',
+  login_name            => 'test_user',
+  default_database_name => 'tempdb'
+}
